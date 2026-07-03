@@ -3,6 +3,15 @@
 A portable Windows app for generating synthetic data with [Faker](https://faker.readthedocs.io/).
 No installation, no Python or Node required on the end user's machine.
 
+## Download
+
+Grab the latest `Fibber.exe` from the [Releases page](https://github.com/IrwingD/Fibber/releases) --
+no installer, just download and run.
+
+> Windows may show a **"Windows protected your PC"** warning on first launch, since
+> this is an unsigned app from an independent developer. Click **More info -> Run
+> anyway** to continue -- this is expected and not a sign anything's wrong.
+
 ## How it works
 
 - `app.py` starts a small Flask server bound to `127.0.0.1` on a random free port,
@@ -58,16 +67,6 @@ Notes on the build:
 - The app assumes Microsoft Edge (present on all Windows 10/11 machines by
   default) or any default browser for rendering the UI -- no WebView2 runtime
   bundling needed.
-
-## Distributing it
-
-**Don't commit `Fibber.exe` into the repo** -- `dist\` is gitignored on purpose.
-Binaries don't belong in git history (no diffing, repo bloat, and GitHub soft-blocks
-files over 100MB anyway).
-
-Instead, build locally and attach `Fibber.exe` to a [GitHub Release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository).
-Anyone visiting the repo gets a clean download link on the Releases page --
-no digging through folders required.
 
 ## Project layout
 
