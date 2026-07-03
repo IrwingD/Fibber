@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Synthetic Data Studio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand"><span class="dot"></span> Synthetic Data Studio</div>
+    <div class="topbar-controls">
+      <label>Locale
+        <select id="locale"></select>
+      </label>
+      <label>Seed
+        <input id="seed" type="text" placeholder="optional" size="6" />
+      </label>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Schema fields</h2>
+      <div id="field-list"></div>
+      <button id="add-field" class="btn">+ Add field</button>
+
+      <div class="rows-control">
+        <label>Rows: <span id="rows-label">1,000</span></label>
+        <input id="rows" type="range" min="10" max="100000" step="10" value="1000" />
+      </div>
+
+      <div class="export-row">
+        <button id="export-csv" class="btn btn-primary">Export CSV</button>
+        <button id="export-json" class="btn">Export JSON</button>
+      </div>
+      <p id="status" class="status"></p>
+    </aside>
+
+    <main class="preview-pane">
+      <div class="preview-header">
+        <span>Live preview &middot; 10 sample rows</span>
+        <button id="shuffle" class="btn">Shuffle</button>
+      </div>
+      <div class="table-wrap">
+        <table id="preview-table">
+          <thead><tr id="preview-head"></tr></thead>
+          <tbody id="preview-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- template for one field row, cloned by app.js -->
+  <template id="field-row-template">
+    <div class="field-row">
+      <input class="field-name" type="text" placeholder="column_name" />
+      <select class="field-category"></select>
+      <select class="field-provider"></select>
+      <button class="remove-field btn-icon" title="Remove field">&times;</button>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
