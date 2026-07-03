@@ -15,6 +15,7 @@
       <label>Seed
         <input id="seed" type="text" placeholder="optional" size="6" />
       </label>
+      <button id="theme-toggle" class="btn" title="Toggle dark mode">Dark mode</button>
     </div>
   </div>
 
@@ -25,8 +26,11 @@
       <button id="add-field" class="btn">+ Add field</button>
 
       <div class="rows-control">
-        <label>Rows: <span id="rows-label">1,000</span></label>
-        <input id="rows" type="range" min="10" max="100000" step="10" value="1000" />
+        <label for="rows">Rows</label>
+        <div class="rows-linked">
+          <input id="rows" type="range" min="10" max="100000" step="10" value="1000" />
+          <input id="rows-number" type="number" min="1" max="500000" step="10" value="1000" />
+        </div>
       </div>
 
       <div class="export-row">

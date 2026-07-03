@@ -34,10 +34,11 @@ let previewTimer = null;
 const el = {
   locale: document.getElementById("locale"),
   seed: document.getElementById("seed"),
+  themeToggle: document.getElementById("theme-toggle"),
   fieldList: document.getElementById("field-list"),
   addField: document.getElementById("add-field"),
   rows: document.getElementById("rows"),
-  rowsLabel: document.getElementById("rows-label"),
+  rowsNumber: document.getElementById("rows-number"),
   exportCsv: document.getElementById("export-csv"),
   exportJson: document.getElementById("export-json"),
   shuffle: document.getElementById("shuffle"),
@@ -46,6 +47,39 @@ const el = {
   previewBody: document.getElementById("preview-body"),
   template: document.getElementById("field-row-template"),
 };
+
+// ---------------------------------------------------------------------
+// Dark mode (persisted locally -- this is a real browser tab, not a
+// sandboxed artifact, so localStorage is fine here)
+// ---------------------------------------------------------------------
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  el.themeToggle.textContent = theme === "dark" ? "Light mode" : "Dark mode";
+}
+applyTheme(localStorage.getItem("theme") || "light");
+el.themeToggle.addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  localStorage.setItem("theme", next);
+  applyTheme(next);
+});
+
+// ---------------------------------------------------------------------
+// Rows: slider and number box stay in sync both directions
+// ---------------------------------------------------------------------
+function setRows(value) {
+  const clamped = Math.max(1, Math.min(500000, Math.round(Number(value) || 0)));
+  el.rows.value = Math.min(100000, clamped);
+  el.rowsNumber.value = clamped;
+  return clamped;
+}
+el.rows.addEventListener("input", () => {
+  setRows(el.rows.value);
+  saveSettings();
+});
+el.rowsNumber.addEventListener("input", () => {
+  setRows(el.rowsNumber.value);
+  saveSettings();
+});
 
 function currentFields() {
   return [...el.fieldList.querySelectorAll(".field-row")].map((row) => ({
@@ -59,7 +93,7 @@ function currentSchema() {
     locale: el.locale.value,
     seed: el.seed.value ? el.seed.value : null,
     fields: currentFields(),
-    rows: Number(el.rows.value),
+    rows: Number(el.rowsNumber.value),
   };
 }
 
@@ -116,6 +150,7 @@ function addFieldRow(initial = {}) {
   });
 
   el.fieldList.appendChild(node);
+  schedulePreview();
 }
 
 // ---------------------------------------------------------------------
@@ -132,6 +167,7 @@ async function runPreview() {
   if (schema.fields.length === 0) {
     el.previewHead.innerHTML = "";
     el.previewBody.innerHTML = "";
+    el.status.textContent = "";
     return;
   }
   el.status.textContent = "Generating preview…";
@@ -144,7 +180,7 @@ async function runPreview() {
     renderPreview(schema.fields, rows);
     el.status.textContent = "";
   } catch (e) {
-    el.status.textContent = "Preview failed — check field configuration.";
+    el.status.textContent = `Preview failed: ${e.message}`;
   }
 }
 
@@ -236,10 +272,7 @@ async function init() {
 
   if (saved && saved.fields && saved.fields.length) {
     if (saved.seed) el.seed.value = saved.seed;
-    if (saved.rows) {
-      el.rows.value = saved.rows;
-      el.rowsLabel.textContent = Number(saved.rows).toLocaleString();
-    }
+    if (saved.rows) setRows(saved.rows);
     saved.fields.forEach((f) => addFieldRow(f));
   } else {
     // sensible starter schema
@@ -247,8 +280,6 @@ async function init() {
     addFieldRow({ name: "email", provider: "email" });
     addFieldRow({ name: "company", provider: "company" });
   }
-
-  runPreview();
 }
 
 el.locale.addEventListener("change", async () => {
@@ -262,10 +293,6 @@ el.locale.addEventListener("change", async () => {
 
 el.seed.addEventListener("input", schedulePreview);
 el.addField.addEventListener("click", () => addFieldRow());
-el.rows.addEventListener("input", () => {
-  el.rowsLabel.textContent = Number(el.rows.value).toLocaleString();
-  saveSettings();
-});
 el.shuffle.addEventListener("click", runPreview);
 el.exportCsv.addEventListener("click", () => runExport("csv"));
 el.exportJson.addEventListener("click", () => runExport("json"));
