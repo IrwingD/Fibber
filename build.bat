@@ -4,7 +4,7 @@ pip install -r requirements.txt
 
 echo.
 echo Building portable app...
-pyinstaller build.spec --noconfirm
+python -m PyInstaller build.spec --noconfirm
 
 echo.
 echo Done. Your portable app folder is:
