@@ -49,18 +49,20 @@ const el = {
 };
 
 // ---------------------------------------------------------------------
-// Dark mode (persisted locally -- this is a real browser tab, not a
-// sandboxed artifact, so localStorage is fine here)
+// Dark mode. NOTE: this can't reliably use localStorage -- the server
+// binds a different random port every launch, so from the browser's
+// perspective each session is a different origin with fresh storage.
+// Persist it server-side in settings.json instead, same as the schema.
 // ---------------------------------------------------------------------
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
   el.themeToggle.textContent = theme === "dark" ? "Light mode" : "Dark mode";
 }
-applyTheme(localStorage.getItem("theme") || "light");
+applyTheme("light"); // instant paint while settings load
 el.themeToggle.addEventListener("click", () => {
   const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-  localStorage.setItem("theme", next);
   applyTheme(next);
+  saveSettings();
 });
 
 // ---------------------------------------------------------------------
@@ -94,6 +96,7 @@ function currentSchema() {
     seed: el.seed.value ? el.seed.value : null,
     fields: currentFields(),
     rows: Number(el.rowsNumber.value),
+    theme: document.documentElement.dataset.theme || "light",
   };
 }
 
@@ -267,6 +270,7 @@ async function init() {
 
   const saved = await loadSettings();
   if (saved && saved.locale) el.locale.value = saved.locale;
+  if (saved && saved.theme) applyTheme(saved.theme);
 
   await loadProviders();
 
