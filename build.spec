@@ -1,6 +1,12 @@
 # -*- mode: python ; coding: utf-8 -*-
-# Build with:  pyinstaller build.spec --noconfirm
-# Output:      dist/SyntheticDataStudio/   <-- this whole folder is the portable app
+# Build with:  python -m PyInstaller build.spec --noconfirm
+# Output:      dist/Fibber.exe   <-- this single file is the whole app
+#
+# NOTE: this is --onefile mode. Every launch silently self-extracts to a
+# temp folder before running (adds ~1-3s startup), in exchange for
+# shipping literally one file with nothing alongside it. If startup
+# speed matters more than a single-file download, switch back to
+# --onedir (see git history / ask for the onedir version of this spec).
 
 from PyInstaller.utils.hooks import collect_data_files
 
@@ -24,25 +30,17 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,
+    a.datas,
     [],
-    exclude_binaries=True,
-    name='SyntheticDataStudio',
+    name='Fibber',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
     console=False,      # no terminal window pops up alongside the app
     disable_windowed_traceback=False,
     argv_emulation=False,
-)
-
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='SyntheticDataStudio',   # -> dist/SyntheticDataStudio/
 )
